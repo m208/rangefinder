@@ -1,16 +1,16 @@
 <template>
     <div>
-      <h1>Добро пожаловать на курс по Vue 3</h1>
+      <h1>PUBG RANGEFINDER Welcome Page</h1>
     </div>
   </template>
   
-  <script>
-  export default {
+<script>
+export default {
+
+}
+</script>
   
-  }
-  </script>
-  
-  <style scoped>
-  
-  </style>
+<style scoped>
+
+</style>
   
