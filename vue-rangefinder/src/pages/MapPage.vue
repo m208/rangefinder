@@ -1,11 +1,10 @@
-<template>
-    <div>
-      <h1>Selected Map: {{ mapName }}</h1>
-    </div>
-  </template>
-  
 <script>
+import MapCanvas from "@/components/MapCanvas.vue";
+
 export default {
+    components: {
+        MapCanvas
+    },
     props: {
         mapName: {
             type: String,
@@ -14,7 +13,14 @@ export default {
     }
 }
 </script>
-  
+
+<template>
+    <div>
+      <h1>Selected Map: {{ mapName }}</h1>
+      <map-canvas></map-canvas>
+    </div>
+  </template>  
+
 <style scoped>
 
 </style>
