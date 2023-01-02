@@ -16,8 +16,10 @@ export default {
 
 <template>
     <div class="page__wrapper">
-      <!-- <h1>Selected Map: {{ mapName }}</h1> -->
-      <map-canvas></map-canvas>
+      <map-canvas 
+        :zoom="1"
+        :mapName="mapName"
+      />
     </div>
   </template>  
 

@@ -4,6 +4,8 @@ import picH from '@/assets/img/Erangel_Main_High_Res.jpg';
 import picM from '@/assets/img/Erangel_Main_Med.jpg';
 
 declare interface BaseComponentData {
+  currentMap: string;
+  currentZoom: number;
   wrapper: HTMLDivElement | null;
   canvas: HTMLCanvasElement | null;
   context: CanvasRenderingContext2D | null;
@@ -20,8 +22,20 @@ declare interface ICoords {
 const emptyCoords: ICoords = { x: 0, y: 0 };
 
 export default {
+  props: {
+    mapName: {
+      type: String,
+      required: true,
+    },
+    zoom: {
+      type: Number,
+      required: true,
+    }
+  },
   data(): BaseComponentData {
     return {
+      currentMap: this.mapName,
+      currentZoom: this.zoom,
       wrapper: null,
       canvas: null,
       context: null,
@@ -45,6 +59,7 @@ export default {
 
         this.canvas!.width = this.wrapper!.offsetWidth;
         this.canvas!.height = this.wrapper!.offsetHeight;
+        //this.context!.scale(0.25, 0.25);
         this.context!.drawImage(
           this.image, 0, 0
         );
@@ -53,27 +68,38 @@ export default {
 
   },
   methods: {
+    clc() {
+      this.currentZoom -= 0.25
+      this.context!.scale(this.currentZoom, this.currentZoom);
+      this.context!.clearRect(0, 0, this.canvas!.width, this.canvas!.height);
+      this.context!.drawImage(
+        this.image!, this.offset.x, this.offset.y, this.image!.width, this.image!.height, 0, 0, this.image!.width, this.image!.height,
+      );
+    },
     handleMouseDown(event: PointerEvent) {
       this.touchStart.x = event.clientX;
       this.touchStart.y = event.clientY;
       this.dragging = true;
-
     },
+
     handleMouseUp() {
       this.dragging = false;
       this.offset.x = this.currentOffset.x;
       this.offset.y = this.currentOffset.y;
     },
+
     handleMouseMove(event: PointerEvent) {
       if (this.dragging) {
         const offset: ICoords = {
-          x: this.touchStart.x - event.clientX,
-          y: this.touchStart.y - event.clientY
+          x: (this.touchStart.x - event.clientX),
+          y: (this.touchStart.y - event.clientY)
         }
 
         const currentOffset: ICoords = {
-          x: this.offset.x + offset.x,
-          y: this.offset.y + offset.y
+          x: (offset.x),
+          y: (offset.y)
+          // x: (this.offset.x + offset.x),
+          // y: (this.offset.y + offset.y)
         }
 
         if (currentOffset.x < 0 || currentOffset.x > this.image!.width - this.wrapper!.offsetWidth) {
@@ -84,10 +110,13 @@ export default {
         }
 
         this.currentOffset = currentOffset;
+        //console.log(currentOffset);
+
 
         this.context!.clearRect(0, 0, this.canvas!.width, this.canvas!.height);
+        //this.context!.translate(-currentOffset.x, -currentOffset.y);
         this.context!.drawImage(
-          this.image!, currentOffset.x, currentOffset.y, this.image!.width, this.image!.height, 0, 0, this.image!.width, this.image!.height,
+          this.image!, currentOffset.x, currentOffset.y, this.image!.width / 0.25, this.image!.height / 0.25, 0, 0, this.image!.width, this.image!.height,
         );
 
       }
@@ -100,6 +129,7 @@ export default {
 <template>
   <div class="map__wrapper">
     <div class="map__canvas" ref = "canvaWrapperRef">
+      <button @click="clc">Bttn</button>
       <canvas 
         @pointerdown="handleMouseDown"
         @pointerup="handleMouseUp"
