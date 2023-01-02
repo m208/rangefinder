@@ -17,6 +17,7 @@ declare interface ICoords {
   x: number;
   y: number;
 }
+const emptyCoords: ICoords = { x: 0, y: 0 };
 
 export default {
   data(): BaseComponentData {
@@ -26,9 +27,9 @@ export default {
       context: null,
       image: null,
       dragging: false,
-      touchStart: { x: 0, y: 0 },
-      offset: { x: 0, y: 0 },
-      currentOffset: { x: 0, y: 0 },
+      touchStart: { ...emptyCoords },
+      offset: { ...emptyCoords },
+      currentOffset: { ...emptyCoords },
     }
   },
   mounted() {
@@ -36,9 +37,8 @@ export default {
     this.canvas = this.$refs.canvaRef as HTMLCanvasElement;
     this.context = this.canvas.getContext('2d');
 
-    const img = new Image();
-    this.image = img;
-    this.image.src = picM;
+    this.image = new Image();
+    this.image.src = picH;
 
     this.image.onload = () => {
       if (this.image !== null) {
@@ -46,15 +46,10 @@ export default {
         this.canvas!.width = this.wrapper!.offsetWidth;
         this.canvas!.height = this.wrapper!.offsetHeight;
         this.context!.drawImage(
-          // drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
-          //drawImage(image, dx, dy, dWidth, dHeight)
-
-          this.image, 0, 0,
-          // this.image, 0, 0, this.image.width, this.image.height, 0, 0, this.image.width, this.image.height,
+          this.image, 0, 0
         );
       }
     }
-
 
   },
   methods: {
@@ -106,13 +101,12 @@ export default {
   <div class="map__wrapper">
     <div class="map__canvas" ref = "canvaWrapperRef">
       <canvas 
-      @pointerdown="handleMouseDown"
-      @pointerup="handleMouseUp"
-      @pointermove="handleMouseMove"
-      ref = "canvaRef"
+        @pointerdown="handleMouseDown"
+        @pointerup="handleMouseUp"
+        @pointermove="handleMouseMove"
+        ref = "canvaRef"
       ></canvas>
     </div>
-
   </div>
 </template>
   

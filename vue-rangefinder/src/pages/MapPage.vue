@@ -16,7 +16,7 @@ export default {
 
 <template>
     <div class="page__wrapper">
-      <h1>Selected Map: {{ mapName }}</h1>
+      <!-- <h1>Selected Map: {{ mapName }}</h1> -->
       <map-canvas></map-canvas>
     </div>
   </template>  
