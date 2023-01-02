@@ -1,11 +1,21 @@
 <script lang = 'ts'>
 import pic from '@/assets/img/Erangel_Main_Low_Res.png';
+import picH from '@/assets/img/Erangel_Main_High_Res.jpg';
+import picM from '@/assets/img/Erangel_Main_Med.jpg';
 
 declare interface BaseComponentData {
   wrapper: HTMLDivElement | null;
   canvas: HTMLCanvasElement | null;
   context: CanvasRenderingContext2D | null;
   image: HTMLImageElement | null;
+  dragging: boolean;
+  touchStart: ICoords;
+  offset: ICoords;
+  currentOffset: ICoords;
+}
+declare interface ICoords {
+  x: number;
+  y: number;
 }
 
 export default {
@@ -14,7 +24,11 @@ export default {
       wrapper: null,
       canvas: null,
       context: null,
-      image: null
+      image: null,
+      dragging: false,
+      touchStart: { x: 0, y: 0 },
+      offset: { x: 0, y: 0 },
+      currentOffset: { x: 0, y: 0 },
     }
   },
   mounted() {
@@ -24,7 +38,7 @@ export default {
 
     const img = new Image();
     this.image = img;
-    this.image.src = pic;
+    this.image.src = picM;
 
     this.image.onload = () => {
       if (this.image !== null) {
@@ -48,7 +62,31 @@ export default {
       this.context!.drawImage(
         this.image!, 200, 200, this.image!.width, this.image!.height, 0, 0, this.image!.width, this.image!.height,
       );
-    }
+    },
+    handleMouseDown(event: PointerEvent) {
+      this.touchStart.x = event.clientX;
+      this.touchStart.y = event.clientY;
+      this.dragging = true;
+
+    },
+    handleMouseUp() {
+      this.dragging = false;
+      this.offset.x += this.currentOffset.x;
+      this.offset.y += this.currentOffset.y;
+    },
+    handleMouseMove(event: PointerEvent) {
+      if (this.dragging) {
+        this.currentOffset.x = this.touchStart.x - event.clientX;
+        this.currentOffset.y = this.touchStart.y - event.clientY;
+
+        this.context!.clearRect(0, 0, this.canvas!.width, this.canvas!.height);
+
+        this.context!.drawImage(
+          this.image!, this.offset.x + this.currentOffset.x, this.offset.y + this.currentOffset.y, this.image!.width, this.image!.height, 0, 0, this.image!.width, this.image!.height,
+        );
+      }
+
+    },
   }
 }
 </script>
@@ -58,7 +96,13 @@ export default {
     <button @click="bttnHandler">BTTN</button>
     <p></p>
     <div class="map__canvas" ref = "canvaWrapperRef">
-          <canvas class = "" ref = "canvaRef"></canvas>
+      <canvas 
+      @pointerdown="handleMouseDown"
+      @pointerup="handleMouseUp"
+      @pointermove="handleMouseMove"
+      class = "" 
+      ref = "canvaRef"
+      ></canvas>
     </div>
 
   </div>
