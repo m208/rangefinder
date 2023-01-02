@@ -58,11 +58,6 @@ export default {
 
   },
   methods: {
-    bttnHandler() {
-      this.context!.drawImage(
-        this.image!, 200, 200, this.image!.width, this.image!.height, 0, 0, this.image!.width, this.image!.height,
-      );
-    },
     handleMouseDown(event: PointerEvent) {
       this.touchStart.x = event.clientX;
       this.touchStart.y = event.clientY;
@@ -71,19 +66,35 @@ export default {
     },
     handleMouseUp() {
       this.dragging = false;
-      this.offset.x += this.currentOffset.x;
-      this.offset.y += this.currentOffset.y;
+      this.offset.x = this.currentOffset.x;
+      this.offset.y = this.currentOffset.y;
     },
     handleMouseMove(event: PointerEvent) {
       if (this.dragging) {
-        this.currentOffset.x = this.touchStart.x - event.clientX;
-        this.currentOffset.y = this.touchStart.y - event.clientY;
+        const offset: ICoords = {
+          x: this.touchStart.x - event.clientX,
+          y: this.touchStart.y - event.clientY
+        }
+
+        const currentOffset: ICoords = {
+          x: this.offset.x + offset.x,
+          y: this.offset.y + offset.y
+        }
+
+        if (currentOffset.x < 0 || currentOffset.x > this.image!.width - this.wrapper!.offsetWidth) {
+          currentOffset.x = this.currentOffset.x
+        }
+        if (currentOffset.y < 0 || currentOffset.y > this.image!.height - this.wrapper!.offsetHeight) {
+          currentOffset.y = this.currentOffset.y
+        }
+
+        this.currentOffset = currentOffset;
 
         this.context!.clearRect(0, 0, this.canvas!.width, this.canvas!.height);
-
         this.context!.drawImage(
-          this.image!, this.offset.x + this.currentOffset.x, this.offset.y + this.currentOffset.y, this.image!.width, this.image!.height, 0, 0, this.image!.width, this.image!.height,
+          this.image!, currentOffset.x, currentOffset.y, this.image!.width, this.image!.height, 0, 0, this.image!.width, this.image!.height,
         );
+
       }
 
     },
@@ -93,14 +104,11 @@ export default {
 
 <template>
   <div class="map__wrapper">
-    <button @click="bttnHandler">BTTN</button>
-    <p></p>
     <div class="map__canvas" ref = "canvaWrapperRef">
       <canvas 
       @pointerdown="handleMouseDown"
       @pointerup="handleMouseUp"
       @pointermove="handleMouseMove"
-      class = "" 
       ref = "canvaRef"
       ></canvas>
     </div>
