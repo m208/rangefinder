@@ -10,10 +10,14 @@ import AppHeader from "@/components/AppHeader.vue";
 </template>
 
 <style scoped>
+.content {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
-
 </style>
