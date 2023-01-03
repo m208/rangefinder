@@ -46,7 +46,10 @@ export default {
       currentOffset: { ...emptyCoords },
     }
   },
+  onUpdated() { console.log('onUpdated'); },
   mounted() {
+    console.log('mounted');
+
     this.wrapper = this.$refs.canvaWrapperRef as HTMLDivElement;
     this.canvas = this.$refs.canvaRef as HTMLCanvasElement;
     this.context = this.canvas.getContext('2d');
@@ -68,8 +71,19 @@ export default {
 
   },
   methods: {
-    clc() {
+    incZoom() {
       this.currentZoom -= 0.25
+      console.log(this.currentZoom);
+
+      this.context!.scale(this.currentZoom, this.currentZoom);
+      this.context!.clearRect(0, 0, this.canvas!.width, this.canvas!.height);
+      this.context!.drawImage(
+        this.image!, this.offset.x, this.offset.y, this.image!.width, this.image!.height, 0, 0, this.image!.width, this.image!.height,
+      );
+    },
+    decZoom() {
+      this.currentZoom += 0.25
+      console.log(this.currentZoom);
       this.context!.scale(this.currentZoom, this.currentZoom);
       this.context!.clearRect(0, 0, this.canvas!.width, this.canvas!.height);
       this.context!.drawImage(
@@ -80,6 +94,8 @@ export default {
       this.touchStart.x = event.clientX;
       this.touchStart.y = event.clientY;
       this.dragging = true;
+      console.log(this.touchStart);
+
     },
 
     handleMouseUp() {
@@ -90,14 +106,14 @@ export default {
 
     handleMouseMove(event: PointerEvent) {
       if (this.dragging) {
-        const offset: ICoords = {
-          x: (this.touchStart.x - event.clientX),
-          y: (this.touchStart.y - event.clientY)
-        }
+        // const offset: ICoords = {
+        //   x: (this.touchStart.x - event.clientX),
+        //   y: (this.touchStart.y - event.clientY)
+        // }
 
         const currentOffset: ICoords = {
-          x: (offset.x),
-          y: (offset.y)
+          x: (this.touchStart.x - event.clientX),
+          y: (this.touchStart.y - event.clientY)
           // x: (this.offset.x + offset.x),
           // y: (this.offset.y + offset.y)
         }
@@ -112,11 +128,16 @@ export default {
         this.currentOffset = currentOffset;
         //console.log(currentOffset);
 
+        // Make sure we're zooming to the center
+        // const x = (this.canvas!.width / this.currentZoom - this.image!.width) / 2;
+        // const y = (this.canvas!.height / this.currentZoom - this.image!.height) / 2;
 
         this.context!.clearRect(0, 0, this.canvas!.width, this.canvas!.height);
         //this.context!.translate(-currentOffset.x, -currentOffset.y);
         this.context!.drawImage(
-          this.image!, currentOffset.x, currentOffset.y, this.image!.width / 0.25, this.image!.height / 0.25, 0, 0, this.image!.width, this.image!.height,
+          //this.image!, 0, 0
+          // this.image!, currentOffset.x / this.currentZoom, currentOffset.y / this.currentZoom, this.image!.width, this.image!.height, 0, 0, this.image!.width, this.image!.height,
+          this.image!, this.offset.x + currentOffset.x, this.offset.y + currentOffset.y / this.currentZoom, this.image!.width, this.image!.height, 0, 0, this.image!.width, this.image!.height,
         );
 
       }
@@ -129,7 +150,8 @@ export default {
 <template>
   <div class="map__wrapper">
     <div class="map__canvas" ref = "canvaWrapperRef">
-      <button @click="clc">Bttn</button>
+      <button @click="incZoom">Zoom IN</button>
+      <button @click="decZoom">Zoom OUT</button>
       <canvas 
         @pointerdown="handleMouseDown"
         @pointerup="handleMouseUp"
