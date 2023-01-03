@@ -1,23 +1,29 @@
 <script>
 import MapCanvas from "@/components/MapCanvas.vue";
+import { zoomLevels } from "@/utils/utils";
 
 export default {
-    components: {
-        MapCanvas
-    },
-    props: {
-        mapName: {
-            type: String,
-            required: true,
-        }
+  components: {
+    MapCanvas
+  },
+  props: {
+    mapName: {
+      type: String,
+      required: true,
     }
+  },
+  data() {
+    return {
+      defaultZoom: 1,
+    }
+  },
 }
 </script>
 
 <template>
     <div class="page__wrapper">
       <map-canvas 
-        :zoom="1"
+        :zoom="defaultZoom"
         :mapName="mapName"
       />
     </div>
