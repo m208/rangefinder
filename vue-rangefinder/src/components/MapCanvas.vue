@@ -22,6 +22,11 @@ declare interface ICoords {
   y: number;
 }
 
+declare interface DrawOptions {
+  centered?: boolean;
+  offset?: ICoords;
+}
+
 const emptyCoords: ICoords = { x: 0, y: 0 };
 
 const [MIN_ZOOM, MAX_ZOOM, ZOOM_STEP] = [0.25, 2, 0.25];
@@ -67,7 +72,7 @@ export default {
         this.canvas!.height = this.wrapper!.offsetHeight;
 
         this.setZoom();
-        this.draw();
+        this.draw({});
       }
     }
   },
@@ -78,10 +83,10 @@ export default {
       context!.scale(this.currentZoom, this.currentZoom);
     },
 
-    draw(centered = false) {
+    draw({ centered, offset }: DrawOptions) {
       const canvas = this.$refs.canvaRef as HTMLCanvasElement;
       const context = canvas?.getContext("2d")
-      context!.clearRect(0, 0, canvas!.width, canvas!.height);
+      context!.clearRect(0, 0, canvas!.width / this.currentZoom, canvas!.height / this.currentZoom);
 
       const x = (canvas!.width / this.currentZoom - this.image!.width) / 2;
       const y = (canvas!.height / this.currentZoom - this.image!.height) / 2;
@@ -105,7 +110,7 @@ export default {
       console.log(this.currentZoom);
 
       this.setZoom();
-      this.draw(true);
+      this.draw({ centered: true });
     },
 
     incZoom() {
@@ -143,15 +148,30 @@ export default {
           y: this.offset.y + (this.touchStart.y - event.clientY)
         }
 
-        // if (currentOffset.x < 0 || currentOffset.x > this.image!.width - this.wrapper!.offsetWidth) {
-        //   currentOffset.x = this.currentOffset.x
-        // }
-        // if (currentOffset.y < 0 || currentOffset.y > this.image!.height - this.wrapper!.offsetHeight) {
-        //   currentOffset.y = this.currentOffset.y
-        // }
+        // Stick image to canvas borders ::
+
+        const deltaPos = {
+          x: (this.canvas!.width / this.currentZoom - this.image!.width) / 2 - currentOffset.x / this.currentZoom,
+          y: (this.canvas!.height / this.currentZoom - this.image!.height) / 2 - currentOffset.y / this.currentZoom
+        }
+
+        const rightCorner = {
+          x: (this.image!.width - this.wrapper!.offsetWidth / this.currentZoom),
+          y: (this.image!.height - this.wrapper!.offsetHeight / this.currentZoom)
+        }
+
+        if (deltaPos.x > 0 || (rightCorner.x + deltaPos.x) < 0) {
+          currentOffset.x = this.currentOffset.x;
+        }
+        if (deltaPos.y > 0 || (rightCorner.y + deltaPos.y) < 0) {
+          currentOffset.y = this.currentOffset.y;
+        }
+
+        // Sticky image end -----------------------
 
         this.currentOffset = currentOffset;
-        this.draw();
+        this.draw({});
+
       }
 
     },
