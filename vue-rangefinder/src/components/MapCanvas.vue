@@ -2,6 +2,7 @@
 import pic from '@/assets/img/Erangel_Main_Low_Res.png';
 import picH from '@/assets/img/Erangel_Main_High_Res.jpg';
 import picM from '@/assets/img/Erangel_Main_Med.jpg';
+import gridSvg from '@/assets/svg/grid.svg';
 
 declare interface BaseComponentData {
   currentMap: string;
@@ -11,6 +12,7 @@ declare interface BaseComponentData {
   canvas: HTMLCanvasElement | null;
   context: CanvasRenderingContext2D | null;
   image: HTMLImageElement | null;
+  gridImage: HTMLImageElement | null;
   dragging: boolean;
   touchStart: ICoords;
   offset: ICoords;
@@ -51,6 +53,7 @@ export default {
       canvas: null,
       context: null,
       image: null,
+      gridImage: null,
       dragging: false,
       touchStart: { ...emptyCoords },
       offset: { ...emptyCoords },
@@ -71,8 +74,13 @@ export default {
         this.canvas!.width = this.wrapper!.offsetWidth;
         this.canvas!.height = this.wrapper!.offsetHeight;
 
-        this.setZoom();
-        this.draw({});
+        this.gridImage = new Image();
+        this.gridImage.src = gridSvg;
+
+        this.gridImage.onload = () => {
+          this.setZoom();
+          this.draw({});
+        }
       }
     }
   },
@@ -83,9 +91,9 @@ export default {
       context!.scale(this.currentZoom, this.currentZoom);
     },
 
-    draw({ centered, offset }: DrawOptions) {
+    draw({ centered }: DrawOptions) {
       const canvas = this.$refs.canvaRef as HTMLCanvasElement;
-      const context = canvas?.getContext("2d")
+      const context = canvas?.getContext("2d");
       context!.clearRect(0, 0, canvas!.width / this.currentZoom, canvas!.height / this.currentZoom);
 
       const x = (canvas!.width / this.currentZoom - this.image!.width) / 2;
@@ -98,6 +106,13 @@ export default {
         x - this.currentOffset.x / zoom,
         y - this.currentOffset.y / zoom,
       );
+
+      context!.drawImage(
+        this.gridImage!,
+        x - this.currentOffset.x / zoom,
+        y - this.currentOffset.y / zoom,
+      );
+
     },
 
     handleZoom(direction: 'inc' | 'dec') {
@@ -111,6 +126,7 @@ export default {
 
       this.setZoom();
       this.draw({ centered: true });
+
     },
 
     incZoom() {
@@ -150,22 +166,22 @@ export default {
 
         // Stick image to canvas borders ::
 
-        const deltaPos = {
-          x: (this.canvas!.width / this.currentZoom - this.image!.width) / 2 - currentOffset.x / this.currentZoom,
-          y: (this.canvas!.height / this.currentZoom - this.image!.height) / 2 - currentOffset.y / this.currentZoom
-        }
+        // const deltaPos = {
+        //   x: (this.canvas!.width / this.currentZoom - this.image!.width) / 2 - currentOffset.x / this.currentZoom,
+        //   y: (this.canvas!.height / this.currentZoom - this.image!.height) / 2 - currentOffset.y / this.currentZoom
+        // }
 
-        const rightCorner = {
-          x: (this.image!.width - this.wrapper!.offsetWidth / this.currentZoom),
-          y: (this.image!.height - this.wrapper!.offsetHeight / this.currentZoom)
-        }
+        // const rightCorner = {
+        //   x: (this.image!.width - this.wrapper!.offsetWidth / this.currentZoom),
+        //   y: (this.image!.height - this.wrapper!.offsetHeight / this.currentZoom)
+        // }
 
-        if (deltaPos.x > 0 || (rightCorner.x + deltaPos.x) < 0) {
-          currentOffset.x = this.currentOffset.x;
-        }
-        if (deltaPos.y > 0 || (rightCorner.y + deltaPos.y) < 0) {
-          currentOffset.y = this.currentOffset.y;
-        }
+        // if (deltaPos.x > 0 || (rightCorner.x + deltaPos.x) < 0) {
+        //   currentOffset.x = this.currentOffset.x;
+        // }
+        // if (deltaPos.y > 0 || (rightCorner.y + deltaPos.y) < 0) {
+        //   currentOffset.y = this.currentOffset.y;
+        // }
 
         // Sticky image end -----------------------
 
@@ -203,8 +219,8 @@ export default {
 }
 .map__wrapper {
   flex: 1 0 auto;
-  width: 100%;
-  height: 100%;
+  width: 99%;
+  height: 99%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
