@@ -2,6 +2,7 @@
 import pic from '@/assets/img/Erangel_Main_Low_Res.png';
 import picH from '@/assets/img/Erangel_Main_High_Res.jpg';
 import picM from '@/assets/img/Erangel_Main_Med.jpg';
+import markerImg from '@/assets/img/map-marker-2-24.png';
 import gridSvg from '@/assets/svg/grid.svg';
 
 declare interface BaseComponentData {
@@ -12,11 +13,15 @@ declare interface BaseComponentData {
   canvas: HTMLCanvasElement | null;
   context: CanvasRenderingContext2D | null;
   image: HTMLImageElement | null;
+  markerImg: HTMLImageElement | null;
   gridImage: HTMLImageElement | null;
   dragging: boolean;
+  placingMark: boolean;
   touchStart: ICoords;
   offset: ICoords;
   currentOffset: ICoords;
+  coordsStart: ICoords;
+  dots: Array<ICoords>
 }
 
 declare interface ICoords {
@@ -53,11 +58,15 @@ export default {
       canvas: null,
       context: null,
       image: null,
+      markerImg: null,
       gridImage: null,
       dragging: false,
+      placingMark: false,
       touchStart: { ...emptyCoords },
       offset: { ...emptyCoords },
       currentOffset: { ...emptyCoords },
+      coordsStart: { ...emptyCoords },
+      dots: [],
     }
   },
   onUpdated() { console.log('onUpdated'); },
@@ -68,6 +77,9 @@ export default {
 
     this.image = new Image();
     this.image.src = picH;
+
+    this.markerImg = new Image();
+    this.markerImg.src = markerImg;
 
     this.image.onload = () => {
       if (this.image !== null) {
@@ -101,18 +113,34 @@ export default {
 
       const zoom = centered ? this.prevZoom : this.currentZoom;
 
+      this.coordsStart = {
+        x: x - this.currentOffset.x / zoom,
+        y: y - this.currentOffset.y / zoom,
+      };
+
       context!.drawImage(
         this.image!,
-        x - this.currentOffset.x / zoom,
-        y - this.currentOffset.y / zoom,
+        this.coordsStart.x,
+        this.coordsStart.y,
       );
 
       context!.drawImage(
         this.gridImage!,
-        x - this.currentOffset.x / zoom,
-        y - this.currentOffset.y / zoom,
+        this.coordsStart.x,
+        this.coordsStart.y,
       );
 
+      this.drawMarks();
+    },
+
+    drawMarks() {
+      for (const dot of this.dots) {
+        this.context!.drawImage(
+          this.markerImg!,
+          this.coordsStart.x + dot.x - this.markerImg!.width / 2,
+          this.coordsStart.y + dot.y - this.markerImg!.height,
+        );
+      }
     },
 
     handleZoom(direction: 'inc' | 'dec') {
@@ -144,16 +172,36 @@ export default {
     },
 
     handleMouseDown(event: PointerEvent) {
-      if (event.button !== 0) return;
-      this.touchStart.x = event.clientX;
-      this.touchStart.y = event.clientY;
-      this.dragging = true;
+      if (event.button == 0) {
+        this.touchStart.x = event.clientX;
+        this.touchStart.y = event.clientY;
+        this.dragging = true;
+      }
+      else if (event.button == 2) {
+        this.placingMark = true;
+        const boundingRect = this.canvas!.getBoundingClientRect();
+
+        this.dots.push({
+          x: -this.coordsStart.x + event.clientX - boundingRect.x,
+          y: -this.coordsStart.y + event.clientY - boundingRect.y,
+        });
+      }
+
     },
 
     handleMouseUp() {
       this.dragging = false;
       this.offset.x = this.currentOffset.x;
       this.offset.y = this.currentOffset.y;
+
+      if (this.placingMark) {
+        this.drawMarks();
+        this.placingMark = false;
+      }
+    },
+
+    disableContextMenu(event: MouseEvent) {
+      event.preventDefault();
     },
 
     handleMouseMove(event: PointerEvent) {
@@ -201,6 +249,7 @@ export default {
       <button @click="incZoom">Zoom IN</button>
       <button @click="decZoom">Zoom OUT</button>
       <canvas 
+        @contextmenu="disableContextMenu"
         @pointerdown="handleMouseDown"
         @pointerup="handleMouseUp"
         @pointermove="handleMouseMove"
