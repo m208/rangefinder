@@ -1,6 +1,6 @@
 <script>
 import MapCanvas from "@/components/MapCanvas.vue";
-import { zoomLevels } from "@/utils/utils";
+import { zoomLevels } from "@/libs/utils";
 
 export default {
   components: {
