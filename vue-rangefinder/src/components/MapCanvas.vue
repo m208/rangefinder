@@ -1,13 +1,8 @@
 <script lang = 'ts'>
-//import pic from '@/assets/img/Erangel_Main_Low_Res.png';
-import picH from '@/assets/img/Erangel_Main_High_Res.jpg';
-//import picH from '@/assets/img/Camp_Jackal_Main_High_Res2.jpg';
-//import picM from '@/assets/img/Erangel_Main_Med.jpg';
-//import markerImg from '@/assets/img/map-marker-2-24.png';
-import gridSvg from '@/assets/svg/grid.svg';
 import markerSvg from '@/assets/svg/map-marker.svg';
 import type { ICoords } from '@/libs/types';
 import { calcDistance, getMiddlePoint } from '@/libs/distance';
+import { getMapParams } from '@/libs/mapsParams';
 
 declare interface BaseComponentData {
   currentMap: string;
@@ -68,12 +63,15 @@ export default {
   },
   onUpdated() { console.log('onUpdated'); },
   mounted() {
+    const mapParams = getMapParams(this.mapName);
+    if (!mapParams) return;
+
     this.wrapper = this.$refs.canvaWrapperRef as HTMLDivElement;
     this.canvas = this.$refs.canvaRef as HTMLCanvasElement;
     this.context = this.canvas.getContext('2d');
 
     this.image = new Image();
-    this.image.src = picH;
+    this.image.src = mapParams.layout;
 
     this.markerImg = new Image();
     this.markerImg.src = markerSvg;
@@ -84,7 +82,7 @@ export default {
         this.canvas!.height = this.wrapper!.offsetHeight;
 
         this.gridImage = new Image();
-        this.gridImage.src = gridSvg;
+        this.gridImage.src = mapParams.grid;
 
         this.gridImage.onload = () => {
           this.setZoom();

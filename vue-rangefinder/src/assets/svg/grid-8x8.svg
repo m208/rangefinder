@@ -3,10 +3,6 @@
             <pattern id="smallGrid" width="101.6" height="101.6" patternUnits="userSpaceOnUse"> \
                 <path d="M 101.6 0 L 0 0 0 101.6" fill="none" stroke="white" stroke-width="0.5" /> \
             </pattern> \
-            <pattern id="grid" width="1016" height="1016" patternUnits="userSpaceOnUse"> \
-                <rect width="1016" height="1016" fill="url(#smallGrid)" /> \
-                <path d="M 1016 0 L 0 0 0 1016" fill="none" stroke="gray" stroke-width="4" /> \
-            </pattern> \
         </defs> \
         <rect width="100%" height="100%" fill="url(#smallGrid)" /> \
 </svg>
