@@ -1,24 +1,22 @@
 import {createRouter, createWebHistory} from "vue-router";
 import MainPage from "@/pages/MainPage.vue";
 import MapPage from "@/pages/MapPage.vue";
+import { mapList } from '@/libs/mapsParams';
 
+const mapLinks = mapList.map(el=>({
+        path: `/${el}`,
+        component: MapPage,
+        props: { mapName: el }
+    })
+)
 
 const routes = [
     {
         path: '/',
         component: MainPage
     },
-    {
-        path: '/erangel',
-        component: MapPage,
-        props: { mapName: 'erangel' }
-    },
-    {
-        path: '/miramar',
-        component: MapPage,
-        props: { mapName: 'miramar' }
-    },
-
+    
+    ...mapLinks
 ]
 
 const router = createRouter({

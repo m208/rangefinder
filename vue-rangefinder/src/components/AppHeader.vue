@@ -1,17 +1,33 @@
-<template>
-    <div class="navbar">
-      <div class = "navbar__logo" @click="$router.push('/')">RangeFinder</div>
-      <div class="navbar__btns">
-        <div class = "navbar__btn" @click="$router.push('/erangel')">ERANGEL</div>
-        <div class = "navbar__btn" @click="$router.push('/miramar')">MIRAMAR</div>
-      </div>
-    </div>
-  </template>
-  
 <script>
+import { mapList } from '@/libs/mapsParams';
+
 export default {
+  data() {
+    return {
+      mapList
+    }
+  }
 }
 </script>
+
+<template>
+  <div class="navbar">
+    <div class = "navbar__logo" @click="$router.push('/')">RangeFinder</div>
+    <div 
+      class="navbar__btns"
+      v-for="map in mapList"
+      :key="map"
+    >
+      <div 
+        class = "navbar__btn" 
+        @click="$router.push(`/${map}`)"
+        >
+          {{ map.toUpperCase() }}
+        </div>
+    </div>
+
+  </div>
+</template>
   
 <style scoped>
 .navbar {

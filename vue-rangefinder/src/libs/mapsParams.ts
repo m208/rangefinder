@@ -14,6 +14,15 @@ export type mapNamesUnion
     | 'vikendi'
     | 'deston';
 
+export const mapList : Array<mapNamesUnion> = [
+    'erangel',
+    'miramar',
+    'taego',
+    'sanhok',
+    'vikendi',
+    'deston'
+];
+
 export type mapSizes = '4x4' | '8x8';
 
 interface MapsParam {
@@ -72,4 +81,3 @@ export const getMapParams = (map: string) => {
         return mapsParams[map as mapNamesUnion];
     }
 }
-
