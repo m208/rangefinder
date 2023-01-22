@@ -1,4 +1,5 @@
 import type { ICoords } from "./types";
+import { mapDistanceMod } from "./utils";
 
 export const calcDistance = (dots: Array<ICoords>) => {
     if (dots.length !== 2) return 0;
@@ -7,7 +8,7 @@ export const calcDistance = (dots: Array<ICoords>) => {
     const dy = Math.max(dots[0].y, dots[1].y) - Math.min(dots[0].y, dots[1].y);
     const distance = Math.sqrt(dx**2 + dy**2);
     
-    return distance;
+    return distance * mapDistanceMod;
 }
 
 export const getMiddlePoint = (dots: Array<ICoords>) => {
