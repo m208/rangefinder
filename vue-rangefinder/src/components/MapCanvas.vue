@@ -1,9 +1,11 @@
 <script lang = 'ts'>
-import pic from '@/assets/img/Erangel_Main_Low_Res.png';
+//import pic from '@/assets/img/Erangel_Main_Low_Res.png';
 import picH from '@/assets/img/Erangel_Main_High_Res.jpg';
-import picM from '@/assets/img/Erangel_Main_Med.jpg';
-import markerImg from '@/assets/img/map-marker-2-24.png';
+//import picH from '@/assets/img/Camp_Jackal_Main_High_Res2.jpg';
+//import picM from '@/assets/img/Erangel_Main_Med.jpg';
+//import markerImg from '@/assets/img/map-marker-2-24.png';
 import gridSvg from '@/assets/svg/grid.svg';
+import markerSvg from '@/assets/svg/map-marker.svg';
 import type { ICoords } from '@/libs/types';
 import { calcDistance, getMiddlePoint } from '@/libs/distance';
 
@@ -24,8 +26,6 @@ declare interface BaseComponentData {
   coordsStart: ICoords;
   dots: Array<ICoords>
 }
-
-
 
 declare interface DrawOptions {
   centered?: boolean;
@@ -76,7 +76,7 @@ export default {
     this.image.src = picH;
 
     this.markerImg = new Image();
-    this.markerImg.src = markerImg;
+    this.markerImg.src = markerSvg;
 
     this.image.onload = () => {
       if (this.image !== null) {
