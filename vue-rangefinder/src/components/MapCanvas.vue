@@ -134,8 +134,11 @@ export default {
       for (const dot of this.dots) {
         this.context!.drawImage(
           this.markerImg!,
-          this.coordsStart.x + dot.x - this.markerImg!.width / 2,
-          this.coordsStart.y + dot.y - this.markerImg!.height,
+          this.coordsStart.x + dot.x - this.markerImg!.width / this.currentZoom / 2,
+          this.coordsStart.y + dot.y - this.markerImg!.height / this.currentZoom,
+
+          this.markerImg!.width / this.currentZoom,
+          this.markerImg!.height / this.currentZoom
         );
       }
 
@@ -151,6 +154,7 @@ export default {
       this.context!.moveTo(this.coordsStart.x + this.dots[0].x, this.coordsStart.y + this.dots[0].y);
       this.context!.lineTo(this.coordsStart.x + this.dots[1].x, this.coordsStart.y + this.dots[1].y);
       this.context!.strokeStyle = "yellow";
+      this.context!.lineWidth = 1.5 / this.currentZoom;
       this.context!.stroke();
     },
 
@@ -159,21 +163,29 @@ export default {
       if (!middlePoint) return;
 
       const labelPos: ICoords = {
-        x: this.coordsStart.x + middlePoint.x - 30,
-        y: this.coordsStart.y + middlePoint.y + 10
+        x: this.coordsStart.x + middlePoint.x - 30 / this.currentZoom,
+        y: this.coordsStart.y + middlePoint.y + 10 / this.currentZoom
       }
 
       const labelWidth = distance > 999 ? 80 : 65;
 
       const path = new Path2D();
-      path.rect(labelPos.x - 5, labelPos.y - 25, labelWidth, 30);
+      path.rect(
+        labelPos.x - 5 / this.currentZoom,
+        labelPos.y - 25 / this.currentZoom,
+        labelWidth / this.currentZoom,
+        30 / this.currentZoom
+      );
+
       this.context!.fillStyle = "gray";
       this.context!.shadowBlur = 20;
       this.context!.shadowColor = "black";
       this.context!.fill(path);
       this.context!.shadowBlur = 0;
 
-      this.context!.font = "28px Verdana";
+      const textSize = (28 / this.currentZoom).toFixed(0);
+
+      this.context!.font = `${textSize}px Verdana`;
       this.context!.fillStyle = "yellow";
       this.context!.fillText(distance.toFixed(0), labelPos.x, labelPos.y);
     },
@@ -227,8 +239,8 @@ export default {
         const boundingRect = this.canvas!.getBoundingClientRect();
 
         const dotCoords: ICoords = {
-          x: -this.coordsStart.x + event.clientX - boundingRect.x,
-          y: -this.coordsStart.y + event.clientY - boundingRect.y,
+          x: -this.coordsStart.x + (event.clientX - boundingRect.x) / this.currentZoom,
+          y: -this.coordsStart.y + (event.clientY - boundingRect.y) / this.currentZoom
         }
 
         this.placeMarks(dotCoords);
