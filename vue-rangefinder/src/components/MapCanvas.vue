@@ -4,6 +4,8 @@ import picH from '@/assets/img/Erangel_Main_High_Res.jpg';
 import picM from '@/assets/img/Erangel_Main_Med.jpg';
 import markerImg from '@/assets/img/map-marker-2-24.png';
 import gridSvg from '@/assets/svg/grid.svg';
+import type { ICoords } from '@/libs/types';
+import { calcDistance, getMiddlePoint } from '@/libs/distance';
 
 declare interface BaseComponentData {
   currentMap: string;
@@ -16,7 +18,6 @@ declare interface BaseComponentData {
   markerImg: HTMLImageElement | null;
   gridImage: HTMLImageElement | null;
   dragging: boolean;
-  placingMark: boolean;
   touchStart: ICoords;
   offset: ICoords;
   currentOffset: ICoords;
@@ -24,10 +25,7 @@ declare interface BaseComponentData {
   dots: Array<ICoords>
 }
 
-declare interface ICoords {
-  x: number;
-  y: number;
-}
+
 
 declare interface DrawOptions {
   centered?: boolean;
@@ -61,7 +59,6 @@ export default {
       markerImg: null,
       gridImage: null,
       dragging: false,
-      placingMark: false,
       touchStart: { ...emptyCoords },
       offset: { ...emptyCoords },
       currentOffset: { ...emptyCoords },
@@ -141,6 +138,55 @@ export default {
           this.coordsStart.y + dot.y - this.markerImg!.height,
         );
       }
+
+      if (this.dots.length === 2) {
+        const range = calcDistance(this.dots);
+        this.drawLine();
+        this.drawRangeValue(range);
+      }
+    },
+
+    drawLine() {
+      this.context!.beginPath();
+      this.context!.moveTo(this.coordsStart.x + this.dots[0].x, this.coordsStart.y + this.dots[0].y);
+      this.context!.lineTo(this.coordsStart.x + this.dots[1].x, this.coordsStart.y + this.dots[1].y);
+      this.context!.strokeStyle = "yellow";
+      this.context!.stroke();
+    },
+
+    drawRangeValue(distance: number) {
+      const middlePoint = getMiddlePoint(this.dots);
+      if (!middlePoint) return;
+
+      const labelPos: ICoords = {
+        x: this.coordsStart.x + middlePoint.x - 30,
+        y: this.coordsStart.y + middlePoint.y + 10
+      }
+
+      const labelWidth = distance > 999 ? 80 : 65;
+
+      const path = new Path2D();
+      path.rect(labelPos.x - 5, labelPos.y - 25, labelWidth, 30);
+      this.context!.fillStyle = "gray";
+      this.context!.shadowBlur = 20;
+      this.context!.shadowColor = "black";
+      this.context!.fill(path);
+      this.context!.shadowBlur = 0;
+
+      this.context!.font = "28px Verdana";
+      this.context!.fillStyle = "yellow";
+      this.context!.fillText(distance.toFixed(0), labelPos.x, labelPos.y);
+    },
+
+    placeMarks(coords: ICoords) {
+      if (this.dots.length < 2) {
+        this.dots.push(coords);
+        this.drawMarks();
+      }
+      else {
+        this.dots = [coords];
+        this.draw({});
+      }
     },
 
     handleZoom(direction: 'inc' | 'dec') {
@@ -178,26 +224,21 @@ export default {
         this.dragging = true;
       }
       else if (event.button == 2) {
-        this.placingMark = true;
         const boundingRect = this.canvas!.getBoundingClientRect();
 
-        this.dots.push({
+        const dotCoords: ICoords = {
           x: -this.coordsStart.x + event.clientX - boundingRect.x,
           y: -this.coordsStart.y + event.clientY - boundingRect.y,
-        });
-      }
+        }
 
+        this.placeMarks(dotCoords);
+      }
     },
 
     handleMouseUp() {
       this.dragging = false;
       this.offset.x = this.currentOffset.x;
       this.offset.y = this.currentOffset.y;
-
-      if (this.placingMark) {
-        this.drawMarks();
-        this.placingMark = false;
-      }
     },
 
     disableContextMenu(event: MouseEvent) {
