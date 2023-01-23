@@ -286,8 +286,10 @@ export default {
 <template>
   <div class="map__wrapper">
     <div class="map__canvas" ref = "canvaWrapperRef">
-      <button @click="incZoom">Zoom IN</button>
-      <button @click="decZoom">Zoom OUT</button>
+      <div class="map_buttons">
+        <button @click="incZoom" class="map_bttn">+</button>
+        <button @click="decZoom" class="map_bttn">-</button>
+      </div>
       <canvas 
         @contextmenu="disableContextMenu"
         @pointerdown="handleMouseDown"
@@ -308,11 +310,31 @@ export default {
 }
 .map__wrapper {
   flex: 1 0 auto;
-  width: 99%;
-  height: 99%;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  overflow: hidden;
 }
+.map_buttons{
+  position: absolute;
+  top: 60px;
+  right: 60px;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.map_bttn{
+  background-color: black;
+  color: white;
+  font-size: xx-large;
+  cursor: pointer;
+  height: 40px;
+  width: 40px;
+  border: 1px solid white;
+}
+
 </style>
   
