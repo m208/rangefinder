@@ -5,7 +5,7 @@ import AppHeader from "@/components/AppHeader.vue";
 <template>
   <div class="content">
     <app-header></app-header>
-    <router-view></router-view>
+    <router-view :key="$route.path"></router-view>
   </div>
 </template>
 
