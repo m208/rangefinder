@@ -7,7 +7,6 @@ import { getMapParams } from '@/libs/mapsParams';
 declare interface BaseComponentData {
   currentMap: string;
   currentZoom: number;
-  prevZoom: number;
   wrapper: HTMLDivElement | null;
   canvas: HTMLCanvasElement | null;
   context: CanvasRenderingContext2D | null;
@@ -20,11 +19,6 @@ declare interface BaseComponentData {
   currentOffset: ICoords;
   coordsStart: ICoords;
   dots: Array<ICoords>
-}
-
-declare interface DrawOptions {
-  centered?: boolean;
-  offset?: ICoords;
 }
 
 const emptyCoords: ICoords = { x: 0, y: 0 };
@@ -46,7 +40,6 @@ export default {
     return {
       currentMap: this.mapName,
       currentZoom: this.zoom,
-      prevZoom: this.zoom,
       wrapper: null,
       canvas: null,
       context: null,
@@ -86,7 +79,7 @@ export default {
 
         this.gridImage.onload = () => {
           this.setZoom();
-          this.draw({});
+          this.draw();
         }
       }
     }
@@ -98,7 +91,7 @@ export default {
       context!.scale(this.currentZoom, this.currentZoom);
     },
 
-    draw({ centered }: DrawOptions) {
+    draw() {
       const canvas = this.$refs.canvaRef as HTMLCanvasElement;
       const context = canvas?.getContext("2d");
       context!.clearRect(0, 0, canvas!.width / this.currentZoom, canvas!.height / this.currentZoom);
@@ -106,11 +99,9 @@ export default {
       const x = (canvas!.width / this.currentZoom - this.image!.width) / 2;
       const y = (canvas!.height / this.currentZoom - this.image!.height) / 2;
 
-      const zoom = centered ? this.prevZoom : this.currentZoom;
-
       this.coordsStart = {
-        x: x - this.currentOffset.x / zoom,
-        y: y - this.currentOffset.y / zoom,
+        x: x - this.currentOffset.x / this.currentZoom,
+        y: y - this.currentOffset.y / this.currentZoom,
       };
 
       context!.drawImage(
@@ -195,7 +186,7 @@ export default {
       }
       else {
         this.dots = [coords];
-        this.draw({});
+        this.draw();
       }
     },
 
@@ -203,14 +194,12 @@ export default {
       const limit = direction === "inc" ? MAX_ZOOM : MIN_ZOOM;
       if (this.currentZoom === limit) return;
 
-      this.prevZoom = this.currentZoom;
       const delta = direction === "inc" ? ZOOM_STEP : -ZOOM_STEP;
       this.currentZoom = +(this.currentZoom + delta).toFixed(2);
       console.log(this.currentZoom);
 
       this.setZoom();
-      this.draw({ centered: true });
-
+      this.draw();
     },
 
     incZoom() {
@@ -259,8 +248,8 @@ export default {
       if (this.dragging) {
 
         const currentOffset: ICoords = {
-          x: this.offset.x + (this.touchStart.x - event.clientX),
-          y: this.offset.y + (this.touchStart.y - event.clientY)
+          x: this.offset.x + (this.touchStart.x - event.clientX) / this.currentZoom,
+          y: this.offset.y + (this.touchStart.y - event.clientY) / this.currentZoom
         }
 
         // Stick image to canvas borders ::
@@ -285,7 +274,7 @@ export default {
         // Sticky image end -----------------------
 
         this.currentOffset = currentOffset;
-        this.draw({});
+        this.draw();
 
       }
 
