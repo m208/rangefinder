@@ -1,5 +1,6 @@
 <script lang = 'ts'>
 import markerSvg from '@/assets/svg/map-marker.svg';
+import gridBg from '@/assets/svg/microgrid.svg';
 import type { ICoords } from '@/libs/types';
 import { calcDistance, getMiddlePoint } from '@/libs/distance';
 import { getMapParams } from '@/libs/mapsParams';
@@ -11,6 +12,7 @@ declare interface BaseComponentData {
   canvas: HTMLCanvasElement | null;
   context: CanvasRenderingContext2D | null;
   image: HTMLImageElement | null;
+  backgroundImg: HTMLImageElement | null;
   markerImg: HTMLImageElement | null;
   gridImage: HTMLImageElement | null;
   dragging: boolean;
@@ -44,6 +46,7 @@ export default {
       canvas: null,
       context: null,
       image: null,
+      backgroundImg: null,
       markerImg: null,
       gridImage: null,
       dragging: false,
@@ -69,6 +72,9 @@ export default {
     this.markerImg = new Image();
     this.markerImg.src = markerSvg;
 
+    this.backgroundImg = new Image();
+    this.backgroundImg.src = gridBg;
+
     this.image.onload = () => {
       if (this.image !== null) {
         this.canvas!.width = this.wrapper!.offsetWidth;
@@ -85,6 +91,12 @@ export default {
     }
   },
   methods: {
+    drawBackground() {
+      const context = this.canvas?.getContext("2d");
+      context!.clearRect(0, 0, this.canvas!.width / this.currentZoom, this.canvas!.height / this.currentZoom);
+      context!.drawImage(this.backgroundImg!, 0, 0, this.canvas!.width / this.currentZoom, this.canvas!.height / this.currentZoom);
+    },
+
     setZoom() {
       const context = this.canvas?.getContext("2d");
       context!.setTransform(1, 0, 0, 1, 0, 0);
@@ -94,7 +106,9 @@ export default {
     draw() {
       const canvas = this.$refs.canvaRef as HTMLCanvasElement;
       const context = canvas?.getContext("2d");
-      context!.clearRect(0, 0, canvas!.width / this.currentZoom, canvas!.height / this.currentZoom);
+      //context!.clearRect(0, 0, canvas!.width / this.currentZoom, canvas!.height / this.currentZoom);
+
+      this.drawBackground();
 
       const x = (canvas!.width / this.currentZoom - this.image!.width) / 2;
       const y = (canvas!.height / this.currentZoom - this.image!.height) / 2;
