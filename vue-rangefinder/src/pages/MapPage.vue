@@ -1,6 +1,5 @@
 <script>
 import MapCanvas from "@/components/MapCanvas.vue";
-import { zoomLevels } from "@/libs/utils";
 
 export default {
   components: {
@@ -12,18 +11,12 @@ export default {
       required: true,
     }
   },
-  data() {
-    return {
-      defaultZoom: 1,
-    }
-  },
 }
 </script>
 
 <template>
     <div class="page__wrapper">
       <map-canvas 
-        :zoom="defaultZoom"
         :mapName="mapName"
       />
     </div>

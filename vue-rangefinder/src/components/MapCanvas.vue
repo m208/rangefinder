@@ -25,23 +25,19 @@ declare interface BaseComponentData {
 
 const emptyCoords: ICoords = { x: 0, y: 0 };
 
-const [MIN_ZOOM, MAX_ZOOM, ZOOM_STEP] = [0.25, 2, 0.25];
+const [MIN_ZOOM, MAX_ZOOM, ZOOM_STEP] = [0.2, 1.5, 0.1];
 
 export default {
   props: {
     mapName: {
       type: String,
       required: true,
-    },
-    zoom: {
-      type: Number,
-      required: true,
     }
   },
   data(): BaseComponentData {
     return {
       currentMap: this.mapName,
-      currentZoom: this.zoom,
+      currentZoom: 0,
       wrapper: null,
       canvas: null,
       context: null,
@@ -61,6 +57,8 @@ export default {
   mounted() {
     const mapParams = getMapParams(this.mapName);
     if (!mapParams) return;
+
+    this.currentZoom = mapParams.defaultZoom;
 
     this.wrapper = this.$refs.canvaWrapperRef as HTMLDivElement;
     this.canvas = this.$refs.canvaRef as HTMLCanvasElement;
@@ -104,11 +102,10 @@ export default {
     },
 
     draw() {
+      this.drawBackground();
+
       const canvas = this.$refs.canvaRef as HTMLCanvasElement;
       const context = canvas?.getContext("2d");
-      //context!.clearRect(0, 0, canvas!.width / this.currentZoom, canvas!.height / this.currentZoom);
-
-      this.drawBackground();
 
       const x = (canvas!.width / this.currentZoom - this.image!.width) / 2;
       const y = (canvas!.height / this.currentZoom - this.image!.height) / 2;
@@ -227,7 +224,7 @@ export default {
     handleWheel(event: WheelEvent) {
       if (this.dragging) return;
       const { deltaY } = event;
-      (deltaY > 0) ? this.incZoom() : this.decZoom();
+      (deltaY > 0) ? this.decZoom() : this.incZoom();
     },
 
     handleMouseDown(event: PointerEvent) {
