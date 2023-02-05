@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "vue": "^3.2.45",
-    "vue-router": "^4.1.6"
+    "vue-router": "^4.1.6",
+    "vue-spinner": "^1.0.4"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.1.4",

@@ -5,6 +5,8 @@ import type { ICoords } from '@/libs/types';
 import { calcDistance, getMiddlePoint } from '@/libs/distance';
 import { getMapParams } from '@/libs/mapsParams';
 
+import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
+
 declare interface BaseComponentData {
   currentMap: string;
   currentZoom: number;
@@ -20,7 +22,8 @@ declare interface BaseComponentData {
   offset: ICoords;
   currentOffset: ICoords;
   coordsStart: ICoords;
-  dots: Array<ICoords>
+  dots: Array<ICoords>;
+  maploading: boolean;
 }
 
 const emptyCoords: ICoords = { x: 0, y: 0 };
@@ -51,6 +54,7 @@ export default {
       currentOffset: { ...emptyCoords },
       coordsStart: { ...emptyCoords },
       dots: [],
+      maploading: true
     }
   },
   onUpdated() { console.log('onUpdated'); },
@@ -84,6 +88,8 @@ export default {
         this.gridImage.onload = () => {
           this.setZoom();
           this.draw();
+
+          this.maploading = false;
         }
       }
     }
@@ -290,30 +296,45 @@ export default {
       }
 
     },
+  },
+  components: {
+    PulseLoader
   }
 }
 </script>
 
 <template>
-  <div class="map__wrapper">
-    <div class="map__canvas" ref = "canvaWrapperRef">
-      <div class="map_buttons">
-        <button @click="incZoom" class="map_bttn">+</button>
-        <button @click="decZoom" class="map_bttn">-</button>
-      </div>
-      <canvas 
-        @contextmenu="disableContextMenu"
-        @pointerdown="handleMouseDown"
-        @pointerup="handleMouseUp"
-        @pointermove="handleMouseMove"
-        @wheel="handleWheel"
-        ref = "canvaRef"
-      ></canvas>
-    </div>
+<div class="map__wrapper">
+  <div class="map__loader" v-if="maploading">
+    <pulse-loader :loading="maploading"></pulse-loader>
   </div>
+  <div class="map__canvas" ref = "canvaWrapperRef" >
+    <div class="map_buttons" >
+      <button @click="incZoom" class="map_bttn">+</button>
+      <button @click="decZoom" class="map_bttn">-</button>
+    </div>
+    <canvas 
+      @contextmenu="disableContextMenu"
+      @pointerdown="handleMouseDown"
+      @pointerup="handleMouseUp"
+      @pointermove="handleMouseMove"
+      @wheel="handleWheel"
+      ref = "canvaRef"
+    ></canvas>
+  </div>
+</div>
 </template>
-  
+
 <style scoped>
+.map__loader{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+}
 .map__canvas{
   height: 100%;
   width: 100%;
@@ -348,4 +369,3 @@ export default {
 }
 
 </style>
-  
