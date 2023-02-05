@@ -1,7 +1,7 @@
 import erangelMapPic from '@/assets/img/Erangel_Main_High_Res.jpg';
 import miramarMapPic from '@/assets/img/Miramar_Main_High_Res.jpg';
 import taegoMapPic from '@/assets/img/Taego_Main_High_Res.jpg';
-import sanhokMapPic from '@/assets/img/sanhok_Main_High_Res.jpg';
+import sanhokMapPic from '@/assets/img/Sanhok_Main_High_Res.jpg';
 import vikendiMapPic from '@/assets/img/Vikendi_Main_High_Res.jpg';
 import destonMapPic from '@/assets/img/Deston_Main_High_Res.jpg';
 import { svgGrid } from './mapGrids';
