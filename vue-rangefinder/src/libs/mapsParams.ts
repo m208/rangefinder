@@ -1,9 +1,17 @@
-import erangelMapPic from '@/assets/img/Erangel_Main_High_Res.jpg';
-import miramarMapPic from '@/assets/img/Miramar_Main_High_Res.jpg';
-import taegoMapPic from '@/assets/img/Taego_Main_High_Res.jpg';
-import sanhokMapPic from '@/assets/img/Sanhok_Main_High_Res.jpg';
-import vikendiMapPic from '@/assets/img/Vikendi_Main_High_Res.jpg';
-import destonMapPic from '@/assets/img/Deston_Main_High_Res.jpg';
+import erangelMapPic from '@/assets/img/maps/Erangel_Main_High_Res.jpg';
+import miramarMapPic from '@/assets/img/maps/Miramar_Main_High_Res.jpg';
+import taegoMapPic from '@/assets/img/maps/Taego_Main_High_Res.jpg';
+import sanhokMapPic from '@/assets/img/maps/Sanhok_Main_High_Res.jpg';
+import vikendiMapPic from '@/assets/img/maps/Vikendi_Main_High_Res.jpg';
+import destonMapPic from '@/assets/img/maps/Deston_Main_High_Res.jpg';
+
+import erangelThumb from '@/assets/img/maps/thumbs/Erangel.jpg';
+import miramarThumb from '@/assets/img/maps/thumbs/Miramar.jpg';
+import taegoThumb from '@/assets/img/maps/thumbs/Taego.jpg';
+import sanhokThumb from '@/assets/img/maps/thumbs/Sanhok.jpg';
+import vikendiThumb from '@/assets/img/maps/thumbs/Vikendi.jpg';
+import destonThumb from '@/assets/img/maps/thumbs/Deston.jpg';
+
 import { svgGrid } from './mapGrids';
 
 export type mapNamesUnion 
@@ -29,6 +37,7 @@ interface MapsParam {
     mapName: string;
     size: mapSizes;
     layout: string;
+    thumbnail: string;
     grid: string;
     defaultZoom: number;
 }
@@ -47,6 +56,7 @@ const mapsParams: MapsParamsMap = {
         mapName: 'Erangel',
         size: "8x8",
         layout: erangelMapPic,
+        thumbnail: erangelThumb,
         grid: svgGrid["8x8"],
         defaultZoom: zoomMap["8x8"],
     },
@@ -54,6 +64,7 @@ const mapsParams: MapsParamsMap = {
         mapName: 'Miramar',
         size: "8x8", 
         layout: miramarMapPic,
+        thumbnail: miramarThumb,
         grid: svgGrid["8x8"],
         defaultZoom: zoomMap["8x8"],
     },
@@ -61,13 +72,15 @@ const mapsParams: MapsParamsMap = {
         mapName: 'Taego',
         size: "8x8",
         layout: taegoMapPic,
+        thumbnail: taegoThumb,
         grid: svgGrid["8x8"],
         defaultZoom: zoomMap["8x8"],
     },
     sanhok: {
-        mapName: 'sanhok',
+        mapName: 'Sanhok',
         size: "4x4",
         layout: sanhokMapPic,
+        thumbnail: sanhokThumb,
         grid: svgGrid["4x4"],
         defaultZoom: zoomMap["4x4"],
     },
@@ -75,6 +88,7 @@ const mapsParams: MapsParamsMap = {
         mapName: 'Vikendi',
         size: "8x8",
         layout: vikendiMapPic,
+        thumbnail: vikendiThumb,
         grid: svgGrid["8x8"],
         defaultZoom: zoomMap["8x8"],
     },
@@ -82,6 +96,7 @@ const mapsParams: MapsParamsMap = {
         mapName: 'Deston',
         size: "8x8",
         layout: destonMapPic,
+        thumbnail: destonThumb,
         grid: svgGrid["8x8"],
         defaultZoom: zoomMap["8x8"],
     }
@@ -92,4 +107,11 @@ export const getMapParams = (map: string) => {
     if (Object.keys(mapsParams).includes(map)){
         return mapsParams[map as mapNamesUnion];
     }
+}
+
+export const getThumbnails = () => {
+    return (Object.values(mapsParams)).map(el => ({
+        name: el.mapName,
+        thumb: el.thumbnail
+      }))
 }
