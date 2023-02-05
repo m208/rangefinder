@@ -22,6 +22,8 @@ export default {
     >
       <div 
         class = "navbar__btn" 
+        :class="{ active: (this.$store.state.currentMap == map) }"
+
         @click="$router.push(`/${map}`)"
         >
           <span class="navbar_text">{{ map.toUpperCase() }}</span>
@@ -55,6 +57,7 @@ export default {
   font-size: large;
   font-weight: 600;
   display: inline-block;
+  transition-duration: 250ms;
 }
 .navbar__logo:hover {
   color: rgb(113 191 26);
@@ -66,8 +69,10 @@ export default {
   font-size: large;
 }
 .navbar_text {
-  font-weight: 600;
+  text-decoration: inherit;
+  font-weight: inherit;
   display: inline-block;
+  transition-duration: 250ms;
 }
 .navbar_text:hover {
   color: rgb(113 191 26);
@@ -76,10 +81,15 @@ export default {
 .navbar__btn {
   margin-left: 20px;
   cursor: pointer;
+  font-weight: 600;
 }
 .navbar__cr a{
   color: initial;
   background-color: initial;
   text-decoration: none;
+}
+.active{
+  text-decoration: underline;
+  font-weight: 800;
 }
 </style>

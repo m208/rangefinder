@@ -12,6 +12,9 @@ export default {
   },
   components: {
     MapCard
+  },
+  mounted() {
+    this.$store.commit('changeCurrentMap', '');
   }
 }
 </script>
