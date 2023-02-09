@@ -13,8 +13,7 @@ const store = createStore({
     },
     mutations: {
       changeCurrentMap (state, payload) {
-        state.currentMap = payload
-        console.log(state.currentMap);
+        state.currentMap = payload;
       }
     }
   })

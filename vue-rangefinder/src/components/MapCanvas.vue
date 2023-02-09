@@ -57,7 +57,6 @@ export default {
       maploading: true
     }
   },
-  onUpdated() { console.log('onUpdated'); },
   mounted() {
     const mapParams = getMapParams(this.mapName);
     if (!mapParams) return;
@@ -213,7 +212,6 @@ export default {
 
       const delta = direction === "inc" ? ZOOM_STEP : -ZOOM_STEP;
       this.currentZoom = +(this.currentZoom + delta).toFixed(2);
-      console.log(this.currentZoom);
 
       this.setZoom();
       this.draw();
