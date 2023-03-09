@@ -18,6 +18,7 @@ declare interface BaseComponentData {
   markerImg: HTMLImageElement | null;
   gridImage: HTMLImageElement | null;
   dragging: boolean;
+  movingMarker: number | null;
   touchStart: ICoords;
   offset: ICoords;
   currentOffset: ICoords;
@@ -49,6 +50,7 @@ export default {
       markerImg: null,
       gridImage: null,
       dragging: false,
+      movingMarker: null,
       touchStart: { ...emptyCoords },
       offset: { ...emptyCoords },
       currentOffset: { ...emptyCoords },
@@ -206,6 +208,12 @@ export default {
       }
     },
 
+    moveMarker(index: number, coords: ICoords) {
+      // TODO: need optimizations
+      this.dots[index] = coords;
+      this.draw();
+    },
+
     handleZoom(direction: 'inc' | 'dec') {
       const limit = direction === "inc" ? MAX_ZOOM : MIN_ZOOM;
       if (this.currentZoom === limit) return;
@@ -225,6 +233,38 @@ export default {
       this.handleZoom('dec');
     },
 
+    getClickCoordsOverCanvas(coords: ICoords) {
+      const boundingRect = this.canvas!.getBoundingClientRect();
+
+      const clickCoords: ICoords = {
+        x: -this.coordsStart.x + (coords.x - boundingRect.x) / this.currentZoom,
+        y: -this.coordsStart.y + (coords.y - boundingRect.y) / this.currentZoom
+      }
+
+      return clickCoords;
+    },
+
+    getMarkerUnderCursor(coords: ICoords): number | null {
+
+      const clickCoords = this.getClickCoordsOverCanvas(coords);
+
+      for (const [index, dot] of this.dots.entries()) {
+        if (
+          clickCoords.x >= dot.x - this.markerImg!.width / this.currentZoom / 2
+          &&
+          clickCoords.x <= dot.x + this.markerImg!.width / this.currentZoom / 2
+          &&
+          clickCoords.y >= dot.y - this.markerImg!.height / this.currentZoom
+          &&
+          clickCoords.y <= dot.y
+
+        ) return index;
+      }
+
+      return null;
+    },
+
+
     handleWheel(event: WheelEvent) {
       if (this.dragging) return;
       const { deltaY } = event;
@@ -233,9 +273,22 @@ export default {
 
     handleMouseDown(event: PointerEvent) {
       if (event.button == 0) {
+
+        if (this.dots.length > 0) {
+
+          const markerUnderCursor = this.getMarkerUnderCursor({ x: event.clientX, y: event.clientY });
+
+          if (markerUnderCursor !== null) {
+            this.movingMarker = markerUnderCursor;
+            return;
+          }
+
+        }
+
         this.touchStart.x = event.clientX;
         this.touchStart.y = event.clientY;
         this.dragging = true;
+
       }
       else if (event.button == 2) {
         const boundingRect = this.canvas!.getBoundingClientRect();
@@ -251,6 +304,7 @@ export default {
 
     handleMouseUp() {
       this.dragging = false;
+      this.movingMarker = null;
       this.offset.x = this.currentOffset.x;
       this.offset.y = this.currentOffset.y;
     },
@@ -291,6 +345,9 @@ export default {
         this.currentOffset = currentOffset;
         this.draw();
 
+      } else if (this.movingMarker !== null) {
+        const coordsUnderCursor = this.getClickCoordsOverCanvas({ x: event.clientX, y: event.clientY });
+        this.moveMarker(this.movingMarker, coordsUnderCursor);
       }
 
     },
