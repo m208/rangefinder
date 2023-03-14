@@ -40,8 +40,8 @@ export default {
   background-color: black;
   background-image: v-bind(bgimg);
   background-size: cover;
+  background-position: top;
   filter: brightness(0.9);
-
   display: flex;
   flex-direction: column;
   align-items: center;
