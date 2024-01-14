@@ -1,6 +1,6 @@
 # PUBG-rangefinder
 
-### A tool for measuring distance in PUBG game.
+### A website for online distance measurement for maps from the PUBG game.
 
 [https://rangefinder.pages.dev](https://rangefinder.pages.dev/)
 
