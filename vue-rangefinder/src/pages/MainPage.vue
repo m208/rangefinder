@@ -47,7 +47,7 @@ export default {
   align-items: center;
 }
 .main_cards{
-  width: 90%;
+  width: 100%;
   margin-top: 25%;
   display: flex;
   align-items: center;

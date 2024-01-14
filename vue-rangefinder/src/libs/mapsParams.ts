@@ -4,6 +4,7 @@ import taegoMapPic from '@/assets/img/maps/Taego_Main_High_Res.jpg';
 import sanhokMapPic from '@/assets/img/maps/Sanhok_Main_High_Res.jpg';
 import vikendiMapPic from '@/assets/img/maps/Vikendi_Main_High_Res.jpg';
 import destonMapPic from '@/assets/img/maps/Deston_Main_High_Res.jpg';
+import rondoMapPic from '@/assets/img/maps/Rondo_Main_High_Res.jpg';
 
 import erangelThumb from '@/assets/img/maps/thumbs/Erangel.jpg';
 import miramarThumb from '@/assets/img/maps/thumbs/Miramar.jpg';
@@ -11,6 +12,7 @@ import taegoThumb from '@/assets/img/maps/thumbs/Taego.jpg';
 import sanhokThumb from '@/assets/img/maps/thumbs/Sanhok.jpg';
 import vikendiThumb from '@/assets/img/maps/thumbs/Vikendi.jpg';
 import destonThumb from '@/assets/img/maps/thumbs/Deston.jpg';
+import rondoThumb from '@/assets/img/maps/thumbs/Rondo.jpg';
 
 import { svgGrid } from './mapGrids';
 
@@ -20,7 +22,8 @@ export type mapNamesUnion
     | 'taego'
     | 'sanhok'
     | 'vikendi'
-    | 'deston';
+    | 'deston'
+    | 'rondo';
 
 export const mapList : Array<mapNamesUnion> = [
     'erangel',
@@ -28,7 +31,8 @@ export const mapList : Array<mapNamesUnion> = [
     'taego',
     'sanhok',
     'vikendi',
-    'deston'
+    'deston',
+    'rondo',
 ];
 
 export type mapSizes = '4x4' | '8x8';
@@ -97,6 +101,14 @@ const mapsParams: MapsParamsMap = {
         size: "8x8",
         layout: destonMapPic,
         thumbnail: destonThumb,
+        grid: svgGrid["8x8"],
+        defaultZoom: zoomMap["8x8"],
+    },
+    rondo: {
+        mapName: 'Rondo',
+        size: "8x8",
+        layout: rondoMapPic,
+        thumbnail: rondoThumb,
         grid: svgGrid["8x8"],
         defaultZoom: zoomMap["8x8"],
     }
